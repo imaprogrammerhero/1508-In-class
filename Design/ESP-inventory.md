@@ -1,4 +1,4 @@
-# INVEMTORY CONTROL SHEET
+# INVENTORY CONTROL SHEET
 
 > *The requirements for this normalization can be found as the following links:*
 > [ESP Part 3](https://dmit-1508.github.io/demos/esp/specs/ESP-3-Specs.html)
