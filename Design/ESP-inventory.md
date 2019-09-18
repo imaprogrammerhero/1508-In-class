@@ -14,11 +14,16 @@
 ### 1NF
 **Inventory** <span class='md'><b class ="pk">ItemNumber</b>,ItemDescription, CurrentSalePrice,InstockCount, ReorderValue</span>
 
-**OrderHistory**<span class="md"><b class="pk"><i class="fk">ItemNumber</i>,PONUmber</b>,Date, SupplierNumber, PONUmber, Quantity, Cost></span>
+**OrderHistory**<span class="md"><b class="pk"><i class="fk">ItemNumber</i>,PONUmber</b>,Date, SupplierNumber, PONUmber, Quantity, Cost</span>
 
 ### 2NF
 
+**OrderHistory**<span class="md"><b class="pk"><i class="fk">ItemNumber</i>,<i class="fk">PONUmber</i>, Quantity, Cost</span>
+
+**PurchaseOrder**<span class="md"><b class="pk">PONUmber</b>,SupplierNumber,Date</span>
+
 ### 3NF
+No Changes
 
 ### Final Tables
 
@@ -27,6 +32,21 @@
 ![VIEW_NAME ERD](./Logical-ERD.png)
 
 ----
+
+
+
+
+##Purchase Order Form
+
+>*about*
+
+### ONF
+
+### 1NF
+
+### 2NF
+
+### 3NF
 
 ## Legend
 
