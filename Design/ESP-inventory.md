@@ -65,10 +65,19 @@ No Changes
 #ERD
 
 ### ONF
-**ChequeRegister**<span class="md"><b class ="rg">Date, ChequeNumber, ChequeAmount, SupplierNumber, SupplierName,<b class="rg"> PurchaseOrderNumber, PODate)</b></b>></span>
+**ChequeRegister**<span class="md"><b class ="rg">Date, ChequeNumber, ChequeAmount, SupplierNumber, SupplierName,<b class="rg"> PurchaseOrderNumber, PODate)</b></b></span>
+**ChequeRegister**<span class="md"><b class="pk">ChequeNumber</b>Date, ChequeAmount, SupplierNumber, SupplierName,<b class="rg">PurchaseOrderNumber, PODate</b></span>
 
-###1NF
+### 1NF
 
+**ChequeRegister**<span class="md"><b class="pk">ChequeNumber</b>Date, ChequeAmount, SupplierNumber, SupplierName</span>
+**PurchaseOrderPayment** <span class="md"><b class="pk"><i class="fk">CheuqeNUumber</i>,PurchaseOerderNumber</b>,POdate</span>
+
+### 2NF
+
+**PurchaseOrderPayment** <span class="md"><b class="pk"><i class="fk">CheuqeNUumber,PurchaseOerderNumber</b></i></span>
+
+**PurchaseOrder** <span class="md"><b class="pk"> PurchaseOderNumber</b>,PODAte, </span>
 
 
 
