@@ -18,7 +18,7 @@
 
 ### 2NF
 
-**OrderHistory**<span class="md"><b class="pk"><i class="fk">ItemNumber</i>,<i class="fk">PONUmber</i>, Quantity, Cost</span>
+**OrderHistory**<span class="md"><b class="pk"><i class="fk">ItemNumber</i>,<i class="fk">PONUmber</i></b>, Quantity, Cost</span>
 
 **PurchaseOrder**<span class="md"><b class="pk">PONUmber</b>,SupplierNumber,Date</span>
 
@@ -49,12 +49,17 @@ No Changes
 **PurchaseOrder** <span class="md"><b class="pk">PurchaseOrderNumber</b>,SupplierName, SupplierNumber, Address, City, Province, PostalCode, Phone, Date, Subtotal, GST, Total </span>
 **PurchaseOrderItem** <span class="md"><b class="pk"><i class="fk">PurchaseOrderNumber</i>, ItemNumber</b>, SupplierItemNumber, SupplierDescription, Quantity, Cost, Amount)</span>
 
-#2NF
-
-### 2NF
+### 2NF no changes
 
 ### 3NF
 
+**PurchaseOrder** <span class="md"><b class="pk">PurchaseOrderNumber</b>,<i class="fk">SupplierNumber</i>, Date, SubTotal, GST, Total)</span>
+
+**Supplier** <span class="md"><b class="pk">SupplierNumber</b>, SupplierName, Address, City, Province, PostalCode, Phone)</span>
+
+**PurchaseOrderItem**<span class="md"><b class="pk"><i class="fk">PurchaseOrderNumber</i>,ItemNumber</b>,SupplierItemNumber, SupplierDescription, Quantity, Cost, Amount)
+
+#ERD
 ## Legend
 
 This legend is a guide to reading and interpreting the table listings under 0NF through 3NF.
