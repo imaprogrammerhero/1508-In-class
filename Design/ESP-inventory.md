@@ -59,7 +59,23 @@ No Changes
 
 **PurchaseOrderItem**<span class="md"><b class="pk"><i class="fk">PurchaseOrderNumber</i>,ItemNumber</b>,SupplierItemNumber, SupplierDescription, Quantity, Cost, Amount)
 
+---------------------------------------------
+## Part4
+> *Payment to Suppliers*
 #ERD
+
+### ONF
+**ChequeRegister**<span class="md"><b class ="rg">Date, ChequeNumber, ChequeAmount, SupplierNumber, SupplierName,<b class="rg"> PurchaseOrderNumber, PODate)</b></b>></span>
+
+###1NF
+
+
+
+
+
+
+
+
 ## Legend
 
 This legend is a guide to reading and interpreting the table listings under 0NF through 3NF.
