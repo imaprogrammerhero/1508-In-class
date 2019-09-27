@@ -28,3 +28,6 @@ Recommended tools for this course include:
 Other recommended resources include:
 
 - [Learn Markdown](https://commonmark.org/help/)
+
+-[download SQL sever 2017 Developer](https://portal.azure.com/?Microsoft_Azure_Education_correlationId=284BB20031586368070CBFE430EB62FD&Microsoft_Azure_Education_newA4E=true#blade/Microsoft_Azure_Education/EducationMenuBlade/software) 
+-search google("microft imagine")->Developer Tools and Software for school...->sign in->sign in with github->nait account->rolls down to SQL 2017 server
