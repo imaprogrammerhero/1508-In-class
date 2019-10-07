@@ -69,7 +69,7 @@ CREATE TABLE Customers
             PRIMARY KEY
         -- IDENTITY means the database will generate a unique whole-number
         -- value for this column
-        IDENTITY(100, 1) -- The first number is the "seed",
+        IDENTITY(100, 1) -- The first number is the "seed",     
                          -- and the last number is the "increment"
                                         NOT NULL, -- NOT NULL means the data is required
     FirstName       varchar(50)         NOT NULL,
@@ -175,11 +175,45 @@ CREATE TABLE OrderDetails
     CONSTRAINT PK_OrderDetails_OrderNumber_ItemNumber
         PRIMARY KEY (OrderNumber, ItemNumber) -- Specify all the columns in the PK
 )
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Payments')
-    DROP TABLE Payments
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'PaymentLogDetails')
     DROP TABLE PaymentLogDetails
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Payments')
+    DROP TABLE Payments
 
+CREATE TABLE Payments
+(
+    PaymentID       int   
+        CONSTRAINT PK_Payments_PaymentID
+            PRIMARY KEY                 NOT NULL,
+    [Date]          datetime            NOT NULL,
+    PaymentAmount   money   
+        CONSTRAINT CK_Payments_PaymentsAmount
+        CHECK (PaymentAmount>0)         NOT NULL,
+    PaymentType     varchar(7)
+        CONSTRAINT CK_Payments_PaymentType
+        CHECK 
+            (PaymentType ='Cash'   OR   
+             PaymentType ='Cheque' OR
+             PaymentType ='Credit' OR)          
+                                        NOT NULL,
+)
+    CREATE TABLE PaymentLogDetails
+(
+    OrderNumber         int  
+        CONSTRAINT FK_PayementLogDetails_OrderNumber_Orders_OrderNumber
+            FOREIGN KEY REFERENCES      NOT NULL,
+    PaymentID           int  
+        CONSTRAINT FK_PaymentLogDetails_PayemntID_Payments_PaymentID
+            FOREIGN KEY REFERENCES      NOT NULL,
+    PaymentNumber       smallint        NOT NULL,
+    BalanceOwing        money  
+    CONSTRAINT CK_PaymentLogDetails_BalacneOwing
+        CHECK (BalanceOwing>0)          NOT NULL,
+    DepositBatchNumber  int             NOT NULL,
+    CONSTRAINT PK_PaymentLogDetails
+        PRIMARY KEY (OrderNumber,PaymentID)
+
+)
 
 --Let's insert a few rows of data for the tables (DML Statements)
     PRINT 'Inserting customer data'
