@@ -192,7 +192,137 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'PaymentLo
 
 --Let's write an SQL query statement to view the data in the database
 --Select the customers information
-    SELECT CustomerNumber, FirstName, LastName,
+SELECT CustomerNumber, FirstName, LastName,
     [Address] + '' +City+','+Province AS 'Customer Address',
     PhoneNumber
-    FROM Customers
+FROM Customers
+
+--Let's insert a few rows of data for inventory items
+PRINT 'Inserting inventory items'
+INSERT INTO InventoryItems(ItemNumber,ItemDescription, CurrentSalePrice,InStockCount,ReorderLevel)
+    VALUES ('H8726', 'cleaning Fan Belt', 29.95, 3, 5),
+           ('H8621', 'Engine Fan Belt', 17.45, 10,5)
+
+--Let's do a "quick 'n'dirty select of Inventory Items
+SELECT * FROM InventoryItems
+--Notice how the data in the InventoryItems is already sorted by the PK
+--This is because the PK of a table is (by default) a CLUSTERED INDEX
+
+--Let's do another set of DML statements to add more data to the database
+PRINT 'Inserting an order'
+INSERT INTO Orders(CustomerNumber, [Date], Subtotal, GST)
+    VALUES (100, GETDATE(), 17.45, 0.87)
+INSERT INTO OrderDetails(OrderNumber, ItemNumber, Quantity, SellingPrice)
+    VALUES (200,'H8726', 1, 17.45)
+PRINT '--end of order data--'
+PRINT ''
+
+/* ***************************
+ * Change Requests for Spec 1
+ *  Perform table changes through ALTER statements.
+ *  Syntax for ALTER TABLE can be found at
+ *      http://msdn.microsoft.com/en-us/library/ms190273.aspx
+ *  ALTER TABLE statements allow us to change an existing table without
+ *  having ot drop it or lose information in the table
+ * **************************/
+
+ -- A) Allow Address, City, Province, and Postal Code to be NULL
+ ALTER TABLE Customers
+    ALTER COLUMN [Address] varchar(35) NULL
+GO--this statement helps to 'seperate' various DDL statement in our script. It's optional.
+ALTER TABLE Customers
+    ALTER COLUMN [Province] char(2) NULL
+GO
+ALTER TABLE Customers
+    ALTER COLUMN [PostalCode] char (6) NULL
+GO
+
+ -- B) Add a check constraint on the First and Last name to require at least two letters.
+ --% is a wildcard for zero or more character (letter, ditigt, or other character)
+ -- _is a wildcard for a single character (letter, ditigt, or other character)
+ --[] are used yto represent a range or set if character that are allowed
+ ALTER TABLE Customers --alter:seperate and check only that column from table
+    ADD CONSTRAINT CK_Customers_FirstName
+        CHECK (FirstName LIKE '[A-Z][A-Z]%')--% measn can be more than two, have to be up to 2 or more
+        --                      \1/\1/
+        -- Positive match for 'Fred'
+        -- Positive match for 'Wu'
+        -- Negative match for 'F'
+        -- Negative match for '2udor'
+
+ALTER TABLE Customers
+    ADD CONSTRAINT CK_Customers_LatsName
+        CHECK (LastName LIKE '[A-Z][A-Z]%')
+
+-- Once the ALTER TABLE changes are made for A) and B),
+-- we can insert Customer information allowing certain columns to be NULL.
+INSERT INTO Customers(FirstName, LastName)
+    VALUES ('Fred', 'Flintstone')
+INSERT INTO Customers(FirstName, LastName)
+    VALUES ('Barney', 'Rubble')
+INSERT INTO Customers(FirstName, LastName, PhoneNumber)
+    VALUES ('Wilma', 'Slaghoople', '(403)555-1212')
+INSERT INTO Customers(FirstName, LastName, [Address], City)
+    VALUES ('Betty', 'Mcbricker', '103 Granite Road', 'Bedrock')
+
+-- Select the customer information
+SELECT  CustomerNumber, FirstName, LastName,
+        [Address] + ' ' + City + ', ' + Province AS 'Customer Address',
+        PhoneNumber
+FROM    Customers
+GO
+
+/* You can check that the contraints work on the first/Last name by hightlight tand running
+these scripts. They should fail.
+
+INSERT INTO Customers(FirstName, LastName)
+    VALUES ('F','Flinton')
+INSERT INTO Customers(FirstName, LastName)
+    VALUES ('Fred','F')
+*/
+
+ -- C) Add an extra bit of information on the Customer table. The client wants to
+--    start tracking customer emails, so they can send out statements for
+--    outstanding payments that are due at the end of the month.
+ALTER TABLE Customers
+    ADD Email varchar(30) NULL
+    --Adding this as a nullable column, because customers already
+    --exists, and we don't have emails for those customers.
+GO
+
+-- D) Add indexes to the Customer's First and Last Name columns
+CREATE NONCLUSTERED INDEX IX_Customers_FirstName
+    ON Customers (FirstName)
+CREATE NONCLUSTERED INDEX IX_Customers_LastName
+    ON Customers (LastName)
+GO --End of a batch instructions
+
+
+-- E) Add a default constraint on the Orders.Date column to use the current date.
+-- GETDATE() is a global function in the SQL Server Database
+-- GETDATE() will obtain the current date/time on the database server
+IF OBJECT_ID('DF_Orders_Date', 'C') IS NOT NULL
+    ALTER TABLE Orders DROP CONSTRAINT DF_Orders_Date
+
+ALTER TABLE Orders
+    ADD CONSTRAINT DF_Orders_Date
+        DEFAULT GETDATE() FOR [Date]
+--      Use     \ this  / for \this column/ if no value was supplied when INSERTING data, if not
+--the computer will dont know where to place the getdate.
+GO
+-- To illustrate the default value, consider this sample row for the Orders table
+INSERT INTO Orders(CustomerNumber, Subtotal, GST)
+    VALUES (101, 150.00, 7.50)
+-- Select the current orders
+SELECT  OrderNumber, CustomerNumber, Total, [Date]
+FROM    Orders
+GO
+
+
+-- F) Change the InventoryItems.ItemDescription column to be NOT NULL
+
+-- G) Add an indes on the Item's Description column, to improve search.
+
+-- H) Data change requests: All inventory items that are less than $5.00 have to
+--    have their prices increased by 10%.
+/*==================================Practice SQL Below================================*/
