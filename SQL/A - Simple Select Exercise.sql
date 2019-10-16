@@ -49,12 +49,10 @@ FROM    Student
 --      and sort the results by the last name
 SELECT    FirstName, LastName
 FROM      Student
-ORDER BY  LastName
+ORDER BY  LastName DESC
 -- 2.d. Select the first and last names of all the students,
 --      and sort the results by the last name, then by the first name
-SELECT    FirstName, LastName
-FROM      Student
-ORDER BY  LastName, FirstName
+ 
 
 --3. Select the CourseId and CourseName of all the courses. Use the column aliases of Course ID and Course Name
 SELECT  CourseId AS 'Course ID', CourseName AS 'Course Name'
@@ -72,14 +70,21 @@ WHERE  CourseID = 'DMIT101'
 SELECT FirstName, LastName
        --,PositionID -- Press [ctrl] + k, then [ctrl] + u to un-comment
 FROM   Staff
-WHERE  PositionID = 3
+WHERE  PositionID = 3--based on PositionID but no let out in table to be seen
 
         -- BTW, what is PositionID of 3 referring to?
 SELECT  PositionID, PositionDescription
 FROM    Position
 
+--Interlude...
+SELECT  S.FirstName, S.LastName
+FROM    Student AS S
+WHERE   S.BalanceOwing = 0
+
+--sp_help Student--give out information from Student table
+
 --6.    Select the Course Names whose course hours are less than 96
-SELECT  C.CourseName
+SELECT  C.CourseName--C laf alliase, optional
 FROM    Course C -- I can have an alias to the table name
 WHERE   C.CourseHours < 96
 -- Type with me the following...
@@ -122,7 +127,7 @@ WHERE   R.Mark BETWEEN 70 AND 80
   AND   R.CourseId IN ('DMIT223', 'DMIT168') -- The IN keyword allows us to have a list of values
                                              -- that will be checked in a OR manner.
 
---8.a. Select the studentIDs, CourseID and mark where the Mark is 80 and 85
+--8.a. Select the studentIDs, CourseID and mark where the Mark is 80 and 85--mean 80 or 85 then let out(and in speaking and kind of sometimes mean OR)
 SELECT  R.StudentID, R.CourseId, R.Mark
 FROM    Registration R
 WHERE   R.Mark = 80 OR R.Mark = 85
