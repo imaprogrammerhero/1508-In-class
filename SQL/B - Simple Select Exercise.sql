@@ -95,6 +95,8 @@ FROM   PaymentType
 -- TODO: Student Answer Here
 SELECT COUNT(PaymentTypeDescription) AS 'Type of Payment'
 FROM PaymentType
+--SELECT COUNT(1) AS 'Type Of Payment'
+--FROM PaymentType -- count every parts include the null or not null parts also, while the normal isnt count null
 
 --10. How many students are in club 'CSS'?
 -- TODO: Student Answer Here
