@@ -1,3 +1,6 @@
+
+--CAO BAO NGOC TRAN (HYDE)
+
 --Simple Select Exercise 3
 -- This sample set illustrates the GROUP BY syntax and the use of Aggregate functions
 -- with GROUP BY.
@@ -106,16 +109,16 @@ GROUP BY StaffID
 ORDER BY AVG(Mark) DESC
 
 --12. How many male and female students do we have?
-SELECT COUNT(Gender) AS 'Female', COUNT(Gender) AS 'Male'
+SELECT Gender, COUNT(Gender) AS 'Number of Students in each Gender'
 FROM Student
 GROUP BY Gender
-HAVING COUNT (Gender)='Female' and COUNT(Gender)='Male' 
+HAVING Gender='F' or Gender='M'
 
 --13. Show the average balance owing for male and female students.
-SELECt AVG(BalanceOwing) AS 'Female Balance Owing', AVG(BalanceOwing) AS 'Male Balance Owing'
+SELECt Gender, AVG(BalanceOwing) AS 'Balance Owing'
 FROM Student
 GROUP BY Gender
-HAVING AVG(BalanceOwing)='Female' and AVG(BalanceOwing)='Male'
+HAVING Gender='F' or Gender='M'
 
 --14. How many students participate in school clubs? Display the club id and the number of students. (Hint: You should be using the Activity table for this question.)
 SELECT ClubId, COUNT(StudentID) AS 'Student in clubs'
