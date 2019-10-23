@@ -28,13 +28,15 @@ SELECT  DISTINCT -- The DISTINCT keyword will remove duplate rows from the resul
 FROM    Staff S
     INNER JOIN Registration R
         ON S.StaffID = R.StaffID
-ORDER BY 'Staff Full Name', CourseId
+ORDER BY 'Staff Full Name', CourseId --can use allias instead of real name (optional)
 
 --3.	Select all the Club ID's and the Student full names that are in them
 -- TODO: Student Answer Here...
 SELECT  ClubId, FirstName + ' ' + LastName AS 'Student Full Name'
 FROM    Activity A
     INNER JOIN Student S ON A.StudentID = S.StudentID
+--Optionally, it could be helpful to sort the results( but only do this if asked)(the behind this line)
+ORDER BY ClubID
 
 --4.	Select the Student full name, courseID's and marks for studentID 199899200.
 SELECT  S.FirstName + ' ' + S.LastName AS 'Student Name',
@@ -84,4 +86,16 @@ WHERE   S.StudentID = 199912010
 
 --9. What are the Student Names, courseID's that have Marks > 80?
 -- TODO: Student Answer Here...
-
+SELECT FirstName + ' '+LastName AS 'Student Names',
+        CourseId
+FROM Student
+    INNER JOIN Registration ON Student.StudentID=Registration.StudentID    
+ WHERE Mark>80 
+ --10. MOdify the script from the previous question to show the Course Name instead of the ID
+SELECT FirstName + ' '+LastName AS 'Student Names',
+        CourseName
+FROM Student
+    INNER JOIN Registration ON Student.StudentID=Registration.StudentID
+    INNER JOIN Course ON Registration.CourseId=Course.CourseId    
+ WHERE Mark>80 
+ --
