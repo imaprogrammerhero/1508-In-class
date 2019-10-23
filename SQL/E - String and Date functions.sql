@@ -4,7 +4,7 @@ GO
 
 -- *******************************
 -- STRING FUNCTIONS
-	-- LEN
+	-- LEN --length, like how long count
 	SELECT LEN('Hello World') AS 'Number of characters'
 	-- LEFT
 	SELECT LEFT('Hello World', 5) AS 'First five characters'
@@ -16,11 +16,11 @@ GO
     ORDER BY 1 -- sorted by the first column
 
 	-- SUBSTRING
-	SELECT SUBSTRING('Hello World', 1, 2)
-	SELECT SUBSTRING('To be or not to be', 10, 3)
+	SELECT SUBSTRING('Hello World', 1, 2)--start from the 1st take and output 2
+	SELECT SUBSTRING('To be or not to be', 10, 3)--start from the 10th take and output 3
 	-- REVERSE
     SELECT REVERSE('Dan')
-    -- (Club whose id is an anagram)
+    -- (Club whose id is an palindrom not anagram)
     -- Select the insert statement below to add a row into the Club table
     -- INSERT INTO Club(ClubId, ClubName) VALUES ('ABCBA', 'Active Bat Catching Brotherhood Assoc.')
 	SELECT	ClubId, ClubName
@@ -36,8 +36,9 @@ GO
 	-- DATENAME - See https://msdn.microsoft.com/en-CA/library/ms174395.aspx for DateParts
 	SELECT DATENAME(MONTH, GETDATE()) AS 'Database Server- Current Month'
 	-- DATEPART - Similar to above
-	SELECT DATEPART(WEEKDAY, GETDATE()) AS 'Day of the week',
-	       DATENAME(WEEKDAY, GETDATE()) AS 'Day of the week'
+	SELECT DATEPART(WEEKDAY, GETDATE()) AS 'Day of the week',--get the date of the week as a number
+	       DATENAME(WEEKDAY, GETDATE()) AS 'Day of the week'-- get the date of the week as a name
+           --LEFT(DATENAME(WEEKDAY, GETDATE())) AS 'Day of the week'-- get out the three letter of the day exp: WED
 	-- DAY
 	-- MONTH -- Birthdays this month - Student.Birthdate
     SELECT FirstName, MONTH(Birthdate) AS 'Birth Month' FROM Student
