@@ -5,7 +5,7 @@ USE [A01-School]
 GO
 
 --1. Select the Payment dates and payment amount for all payments that were Cash
-SELECT PaymentDate, Amount
+SELECT PaymentDate, Amount--, Payment.PaymentTypeID
 FROM   Payment
 WHERE  PaymentTypeID = -- Using the = means that the RH side must be a single value
      -- Assuming that every PaymentTypeDescription will be UNIQUE,
@@ -23,11 +23,31 @@ WHERE  PaymentTypeDescription = 'cash'
 
 --2. Select The Student ID's of all the students that are in the 'Association of Computing Machinery' club
 -- TODO: Student Answer Here
+SELECT StudentID
+FROM Activity 
+WHERE ClubId =
+    (SELECT ClubId
+      FROM CLub  
+      WHERE ClubName ='Association of Computing Machinery')
+--2b Select the name of all students in the 'Association of Computing Machinery' club. Use a subquery for your answer. When you make your answer, ensure the outmost query only uses the student table in its FROM clause
+SELECT FirstName + ' '+ LastName
+FROM Student
+WHERE StudentID IN
+    (SELECT StudentID
+    FROM Activity
+    WHERE ClubID=
+        (SELECT ClubID FROM Club
+        WHERE ClubName='Association of Computing Machinery')
+
+--This is like saying
+SELECT FirstName +' ' +LastName
+FROM Student
+WHERE StudentID IN (19912010, 200322620,200495500)
 
 --3. Select All the staff full names for staff that have taught a course.
 SELECT FirstName + ' ' + LastName AS 'Staff'
 FROM   Staff
-WHERE  StaffID IN -- I used IN because the subquery returns many rows
+WHERE  StaffID IN -- I used IN because the subquery returns many rows --If want to know who not teach the course use "NOT IN"
     (SELECT DISTINCT StaffID FROM Registration)
 
 -- The above can also be done as an INNER JOIN...
