@@ -129,3 +129,45 @@ WHERE City = 'Edm'
 --9. What is the avg mark for each of the students from Edm? Display their StudentID and avg(mark)
 -- TODO: Student Answer Here...
 
+
+--10. Which student(s) have the highest average mark? Hint - This can only be done by a subquery
+--list the average marks of the students; this will be the subquery portion
+SELECT StudentID, AVG(MARK) AS 'Average'
+FROM Registration
+GROUP BY StudentID
+-- List the students whose average mark is as large as the largest average.
+SELECT FirstName + ' '+ LastName AS 'Student Name',
+        AVG(Mark) AS 'Average'
+FROM Student AS S
+    INNER JOIN Registration AS R 
+        ON S.StudentID=R.StudentID
+GROUP BY FirstName, LastName
+HAVING AVG(Mark) >=ALL 
+                    (SELECT AVG(Mark) AS 'Average'
+                    WHERE Mark IS NOT NULL
+                    FROM Registration   
+                    GROUP BY StudentID) 
+
+
+--11. Which course(s) allow the largest classes? Show the course id, name and max class size.
+--sub query
+SELECT C.CourseId, MaxStudents AS 'Max students in class'
+FROM Course AS C
+--Main query
+SELECT C.CourseID, C.CourseName
+FROM Course AS C
+WHERE C.MaxStudents>=All (SELECT MaxStudents AS 'Max students in class'FROM Course AS C )
+
+--12. Which course(s) are the most affordable. show the course name and cost.
+--13. Which staff have taught the largest class? (Be sure to group registrations by course and semester)
+--14. Which  student(s) are most active in the club?
+--subquery portion - counts of clubs when grouping by students
+    SELECT COUNT(ClubID) FROM Activity GROUP BY StudentID
+--Main query
+SELECT FirstName, LastName
+FROM Student AS S
+    INNER JOIN Activity AS A
+        ON S.StudentID=A.StudentID
+GROUP BY FirstName, LastName
+HAVING COUNT(ClubId) >= ALL
+    (SELECT COUNT(ClubId) FROM Activity GROUP BY StudentID)
