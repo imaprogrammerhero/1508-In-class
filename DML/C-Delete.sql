@@ -10,7 +10,7 @@ GO -- Execute the code up to this point as a single batch
 DELETE FROM Activity
 WHERE  ClubID = 'CSS'
 
--- 2. The probe into the CSS club scandal is complete. Remove the club from the Blub's table.
+-- 2. The probe into the CSS club scandal is complete. Remove the club from the Club's table.
 DELETE FROM Club
 WHERE  ClubID = 'CSS'
 
@@ -20,3 +20,9 @@ WHERE  StudentID IN (SELECT StudentID
                      FROM Student
                      WHERE FirstName = 'Flying'
                        AND LastName = 'Nun')
+
+--4. The school is resetting all inactive clubs. Remove all those clubs without members (use a subquery).
+--TODOL Student Answer Here...
+DELETE FROM Activity
+WHERE StudentID=0
+--SELECT * FROM Activity

@@ -6,7 +6,7 @@ GO -- Execute the code up to this point as a single batch
     The syntax for the INSERT statement is
 
     INSERT INTO TableName(Comma, Separated, ListOf, ColumnNames)
-    VALUES ('A', 'Value', 'Per', 'Column')
+    VALUES ('A', 'Value', 'Per', 'Column') --orderly by INSERT
 
     The line above will insert a single row of data. Typically, this
     syntax is used for hard-coded values.
@@ -14,13 +14,13 @@ GO -- Execute the code up to this point as a single batch
 
     INSERT INTO TableName(Comma, Separated, ListOf, ColumnNames)
     VALUES ('A', 'Value', 'Per', 'Column'),
-           ('Another', 'Row', 'Of', 'Values')
+           ('Another', 'Row', 'Of', 'Values') --we cam cp,nime SELECT subqueries in here
     
     Another syntax for the INSERT statement is to use a SELECT clause in place
     of the VALUES clause. This is used for zero-to-many possible rows to insert.
 
     INSERT INTO TableName(Comma, Separated, ListOf, ColumnNames)
-    SELECT First, Second, Third, LastColumn
+    SELECT First, Second, Third, LastColumn--orderly by SELECT
     FROM   SomeTable
 */
 
@@ -42,7 +42,11 @@ VALUES ('Shane', 'Bell', GETDATE(),
         (SELECT PositionID
         FROM   Position
         WHERE  PositionDescription = 'Instructor'))
-
+--2c. We have an opened position in the Staff.
+SELECT P.PositionDescription
+FROM Position AS P
+WHERE P.PositionID NOT IN(SELECT P.PositionID FROM Staff)
+--Add Sheldon Murray as the new Assistant Dean
 -- 3. There are three additional clubs being started at the school:
 --      - START - Small Tech And Research Teams
 --      - CALM - Coping And Lifestyle Management
@@ -56,8 +60,11 @@ VALUES ('START', 'Small Tech And Research Teams'),
 -- ======= Practice ========
 -- 4. In your web browser, use https://randomuser.me/ to get information on three
 --    people to add as new students. Write separate insert statement for each new student.
--- TODO: Student Answer Here....
-
+-- TODO: Student Answer Here.... SP_help Studet (to check information)
+INSERT INTO Student(FirstName, LastName, Gender, Birthdate)
+VALUES ('Alvin','Berry','Male','1987-07-08'),
+        ('Monica','Dean','Female','1952-11-05'),
+        ('Bob','Washington','Male','1994-03-11')
 
 -- 5. Enroll each of the students you've added into the DMIT104 course.
 --    Use 'Dan Gilleland' as the instructor. At this point, their marks should be NULL.

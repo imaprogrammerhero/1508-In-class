@@ -22,6 +22,7 @@ UPDATE Course
 SET    CourseCost = CourseCost * 1.10
 WHERE  CourseName IN ('Expert SQL', 'Quality Assurance')
 -- Should see 2 rows affected
+--once you begin you cant undo
 
 -- 2. Along with the goals of the school to make more money, they are allowing
 --    all courses to have a total of 10 students as the maximum.
