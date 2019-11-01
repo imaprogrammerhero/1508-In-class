@@ -76,5 +76,6 @@ GO
 
 --7.  Using the student grades view, update the  mark for studentID 199899200 in course dmit152 to be 90.
 
+
 --8.  Using the student grades view, delete the same record from the previous question.
 
