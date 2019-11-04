@@ -35,6 +35,10 @@ AS
 RETURN
 GO
 
+AddClub 'ABC','After Bachaloriate Club'
+GO
+AddClub ABD, Another_Boring_Disaster --It can be like this but with NULL and 'NULL' is actually different 
+GO
 
 -- 1.b. Modify the AddClub procedure to ensure that the club name and id are actually supplied. Use the RAISERROR() function to report that this data is required.
 ALTER PROCEDURE AddClub
@@ -69,8 +73,11 @@ AS
     WHERE   ClubId LIKE @PartialID + '%'
 RETURN
 GO
-
-EXEC FindStudentClubs NULL  -- What do you predict the result will be?
+--Testing with good DATa
+EXEC FindStudentClubs 'C'
+--TEsting with bad data     
+EXEC FindStudentClubs NULL  -- What do you predict the result will be? --not an error so an empty string is different from a NULL, can look at also from thr next EXEC
+--TEsting with unusual data
 EXEC FindStudentClubs ''    -- What do you predict the result will be?
 GO
 ALTER PROCEDURE FindStudentClubs
@@ -88,6 +95,7 @@ AS
 RETURN
 GO
 EXEC FindStudentClubs ''    -- What do you predict the result will be?
+EXEC FindStudentClubs 'NA' --  should give good result with no errors
 GO
 -- The above change did not stop the select.
 -- To fix it, we need the ELSE side of the IF validation
