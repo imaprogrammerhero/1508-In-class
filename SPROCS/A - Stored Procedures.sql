@@ -169,10 +169,51 @@ INSERT INTO Course(CourseId, CourseName, CourseHours, CourseCost, MaxStudents)
 VALUES ('DMIT987', 'Advanced Logic', 90, 420.00, 12)
 
 --6. Create a stored procedure called "Provinces" to list all the students provinces.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'Provices')
+    DROP PROCEDURE Provinces
+GO
+CREATE PROCEDURE Provinces
+    -- Parameters here
+AS
+    SELECT DISTINCT S.Province
+    FROM Student AS S
+RETURN
+GO
 
+EXEC Provinces
 --7. OK, question 6 was ridiculously simple and serves no purpose. Lets remove that stored procedure from the database.
+DROP PROCEDURE Provinces
 
 --8. Create a stored procedure called StudentPaymentTypes that lists all the student names and their payment types. Ensure all the student names are listed, including those who have not yet made a payment.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'StudentPaymentTypes ')
+    DROP PROCEDURE StudentPaymentTypes 
+GO
+CREATE PROCEDURE StudentPaymentTypes 
+    -- Parameters here
+AS
+    SELECT S.FirstName+' '+S.LastName AS 'FullName', PT.PaymentTypeID, PT.PaymentTypeDescription
+    FROM Student AS S
+        LEFT OUTER JOIN Payment AS P
+            ON S.StudentID=P.StudentID
+        LEFT OUTER JOIN PaymentType AS PT
+            ON P.PaymentTypeID=PT.PaymentTypeID
+RETURN
+GO
 
+EXEC StudentPaymentTypes
+GO
 --9. Modify the procedure from question 8 to return only the student names that have made payments.
+ALTER PROCEDURE StudentPaymentTypes
+
+AS
+  SELECT S.FirstName+' '+S.LastName AS 'FullName', PT.PaymentTypeID, PT.PaymentTypeDescription
+    FROM Student AS S
+        INNER JOIN Payment AS P
+            ON S.StudentID=P.StudentID
+        INNER JOIN PaymentType AS PT
+            ON P.PaymentTypeID=PT.PaymentTypeID
+RETURN
+GO
+-- Now the stored procedure can be called with any semester I want
+EXEC StudentPaymentTypes 
 
