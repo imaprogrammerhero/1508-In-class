@@ -175,16 +175,119 @@ GO
 
 
 -- 5. Create a stored procedure that will remove a student from a club. Call it RemoveFromClub.
-
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'RemoveFromClub')
+    DROP PROCEDURE RemoveFromClub
+GO
+-- sp_help Club -- Running the sp_help stored procedure will give you information about a table, sproc, etc.
+CREATE PROCEDURE RemoveFromClub
+    -- Parameters here
+   @StudentId   int,
+   @ClubId      varchar(10)
+AS
+    -- Body of procedure here
+    -- Should put some validation here.....
+    IF(@StudentId IS NULL OR @ClubId IS NULL)
+        RAISERROR ('StudentId and ClubId are required', 16,1)
+    ELSE
+        DELETE FROM Activity WHERE @StudentId = @StudentId AND ClubId=@ClubId
+ 
+RETURN
+GO
 
 -- Query-based Stored Procedures
 -- 6. Create a stored procedure that will display all the staff and their position in the school.
 --    Show the full name of the staff member and the description of their position.
-
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'ListStaffPositions')
+    DROP PROCEDURE ListStaffPositions
+GO
+-- sp_help Club -- Running the sp_help stored procedure will give you information about a table, sproc, etc.
+CREATE PROCEDURE ListStaffPositions
+    -- Parameters here
+   @StudentId   int,
+   @ClubId      varchar(10)
+AS
+    -- Body of procedure here
+    -- Should put some validation here.....
+    SELECT FirstName + ' '+ LastName  AS 'StaffMember', P.PositionDescription
+    FROM Position AS P
+        INNER JOIN Staff AS S
+            ON P.PositionID=S.PositionID
+RETURN
+GO
 -- 7. Display all the final course marks for a given student. Include the name and number of the course
 --    along with the student's mark.
-
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'StudentMarks')
+    DROP PROCEDURE StudentMarks
+GO
+-- sp_help Club -- Running the sp_help stored procedure will give you information about a table, sproc, etc.
+CREATE PROCEDURE StudentMarks
+    -- Parameters here
+   @StudentId   int
+AS
+    -- Body of procedure here
+    -- Should put some validation here.....
+    SELECT C.CourseName, C.CourseId, R.Mark
+    FROM Registration AS R
+        INNER JOIN Course AS C 
+            ON R.CourseId=C.CourseId
+    WHERE StudentId=@StudentId
+RETURN
+GO
 -- 8. Display the students that are enrolled in a given course on a given semester.
 --    Display the course name and the student's full name and mark.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'CourseList')
+    DROP PROCEDURE CourseList
+GO
+-- sp_help Club -- Running the sp_help stored procedure will give you information about a table, sproc, etc.
+CREATE PROCEDURE CourseList
+    -- Parameters here
+   @CourseId   char(7),
+   @Semester    char(5)
+AS
+    -- Body of procedure here
+    IF @CourseId IS NULL OR @Semester IS NULL
+        RAISERROR('Course and semester are required',16,1)
+    -- Should put some validation here.....
+    ELSE
+    SELECT C.CourseName, FirstName + ' '+ LastName, Mark
+    FROM Course AS C
+        INNER JOIN Registration R 
+            ON R.CourseId =C.CourseId
+        INNER JOIN Student AS S 
+            ON S.StudentID=R.StudentID
+    WHERE C.CourseId=@CourseId
+    AND     R.Semester=@Semester
+RETURN
+GO
 
+--To test  this, pick a course and semester
+--SELECT * FROM Registration --DMIT 170 2004J
+EXEC CourseList 'DMIT170', '2004J'
+--To test with bad data
+EXEC CourseList NULL, '2004J'
+EXEC CourseList '2004J', NULL
+
+--Data with no rows as result
+EXEC CourseList 'FAKE170','2004J'
+ 
 -- 9. The school is running out of money! Find out who still owes money for the courses they are enrolled in.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'BillCollectorWorksheet')
+    DROP PROCEDURE BillCollectorWorksheet
+GO
+-- sp_help Club -- Running the sp_help stored procedure will give you information about a table, sproc, etc.
+CREATE PROCEDURE BillCollectorWorksheet
+    -- Parameters here
+   @CourseId   char(7),
+   @Semester    char(5)
+AS
+    -- Body of procedure here
+    -- Should put some validation here.....
+    SELECT FirstName + ' '+ LastName, R.CourseId
+    FROM Student AS S
+        INNER JOIN Registration R 
+            ON R.StudentID=S.StudentID
+    WHERE BalanceOwing>0
+RETURN
+GO
+
+EXEC BillCollectorWorksheet
