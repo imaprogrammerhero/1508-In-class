@@ -175,7 +175,11 @@ GO
 
 
 -- 5. Create a stored procedure that will remove a student from a club. Call it RemoveFromClub.
-
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'RemoveFromClub')
+    DROP PROCEDURE RemoveFromClub
+GO
+CREATE PROCEDURE RemoveFromClub
+    @
 
 -- Query-based Stored Procedures
 -- 6. Create a stored procedure that will display all the staff and their position in the school.
