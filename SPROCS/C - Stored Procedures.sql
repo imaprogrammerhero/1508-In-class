@@ -13,7 +13,24 @@ WHERE   Mark BETWEEN 70 AND 80 -- BETWEEN is inclusive
 --      Place this in a stored procedure that has two parameters,
 --      one for the upper value and one for the lower value.
 --      Call the stored procedure ListStudentMarksByRange
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'ListStudentMarksByRange')
+    DROP PROCEDURE ListStudentMarksByRange
+GO
+-- sp_help Club -- Running the sp_help stored procedure will give you information about a table, sproc, etc.
+CREATE PROCEDURE ListStudentMarksByRange
+    -- Parameters here
+   @upper       decimal,
+   @lower       decimal
+AS
+    SELECT  StudentID, CourseId, Mark
+    FROM    Registration
+    WHERE   Mark BETWEEN @lower AND @upper
 
+ 
+RETURN
+GO
+
+EXEC ListStudentMarksByRange 70, 80
 
 /* ----------------------------------------------------- */
 
@@ -27,9 +44,20 @@ FROM    Staff S
 ORDER BY 'Staff Full Name', CourseId
 --      Place this in a stored procedure called CourseInstructors.
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'CourseInstructors')
+    DROP PROCEDURE CourseInstructors
+GO
+CREATE PROCEDURE CourseInstructors
+AS
+    SELECT DISTINCT S.FirstName+ ' '+ S.LastName AS 'Staff Fullname', R.CourseId 
+    FROM Staff AS S   
+        INNER JOIN Registration AS R
+            ON S.StaffID=R.StaffID
+    ORDER BY 'Staff Fullname', CourseId
+ GO
 
+ EXEC CourseInstructors
 /* ----------------------------------------------------- */
-
 -- 3.   Selects the students first and last names who have last names starting with S.
 SELECT  FirstName, LastName
 FROM    Student
@@ -39,7 +67,18 @@ WHERE   LastName LIKE 'S%'
 --      Do NOT assume that the '%' is part of the value in the parameter variable;
 --      Your solution should concatenate the @PartialName with the wildcard.
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = ' FindStudentByLastName')
+    DROP PROCEDURE  FindStudentByLastName
+GO
+CREATE PROCEDURE  FindStudentByLastName
+    @PartialName varchar(35)
+AS 
+    SELECT S.FirstName + ' ' + S.LastName 
+    FROM Student AS S
+    WHERE S.LastName LIKE @PartialName
+GO
 
+EXEC FindStudentByLastName 'S%'
 /* ----------------------------------------------------- */
 
 -- 4.   Selects the CourseID's and Coursenames where the CourseName contains the word 'programming'.
@@ -50,7 +89,14 @@ WHERE   CourseName LIKE '%programming%'
 --      The parameter should be called @PartialName.
 --      Do NOT assume that the '%' is part of the value in the parameter variable.
 
-
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'FindCourse')
+    DROP PROCEDURE FindCourse
+GO
+--sp_help Course
+CREATE PROCEDURE FindCourse
+    @PartialName varchar(40)
+AS
+    SELECT 
 /* ----------------------------------------------------- */
 
 -- 5.   Selects the Payment Type Description(s) that have the highest number of Payments made.
