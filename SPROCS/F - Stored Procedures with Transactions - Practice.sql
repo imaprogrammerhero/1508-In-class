@@ -24,10 +24,27 @@ CREATE PROCEDURE DissolveClub
     @ClubId         varchar(10),
     @StudentID      int,
     @ClubName       varchar(50)
-AS
+AS  
     -- Body of procedure here
     IF @ClubId <> 0
 RETURN
 GO
 
---2.Create a stored procedure ArchivePayments. You will need to use the following StudentPayment
+-- 2. Create a stored procedure called ArchivePayments. This stored procedure must transfer all payment records to the StudentPaymentArchive table. After archiving, delete the payment records.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'StudentPaymentArchive')
+    DROP TABLE StudentPaymentArchive
+
+CREATE TABLE StudentPaymentArchive
+(
+    ArchiveId       int
+        CONSTRAINT PK_StudentPaymentArchive
+        PRIMARY KEY
+        IDENTITY(1,1)
+                                NOT NULL,
+    StudentID       int         NOT NULL,
+    FirstName       varchar(25) NOT NULL,
+    LastName        varchar(35) NOT NULL,
+    PaymentMethod   varchar(40) NOT NULL,
+    Amount          money       NOT NULL,
+    PaymentDate     datetime    NOT NULL
+)
