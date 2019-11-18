@@ -102,5 +102,33 @@ CREATE PROCEDURE ArchivePayments
     -- Parameters here
 AS
     -- Body of procedure here
+    BEGIN TRANSACTION --tmeporary until commited
+    -- Insert into the StudentPayentArchie()
+    INSERT INTO StudentPaymentArchive(StudentID, FirstName, LastName, PaymentDate, PaymentMethod, Amount)
+    SELECT S.StudentID, S.FirstName, S.LastName, PaymentDate, PaymentTypeDescription, Amount
+    FROM Student AS S
+        INNER JOIN Payment AS P
+            ON S.StudentID=P.StudentID
+        INNER JOIN PaymentType AS PT
+            ON PT.PaymentTypeID=P.PaymentTypeID
+    IF @@ERROR > 0
+    BEGIN
+        ROLLBACK TRANSACTION-- backing out of transaction
+        RAISERROR('Unable to archie student payments',16,1)
+    END
+    ELSE
+    BEGIN
+        --Delete Payment 
+        DELETE FROM Payment
+        IF @@ERROR>0
+        BEGIN
+            ROLLBACK TRANSACTION-- back ouyt and undo any changes since beginning
+            RAISERROR('Unable to delete payments after archiving',16,1)
+        END
+        ELSE
+        BEGIN
+            COMMIT TRANSACTION-- accept & finalize all changes to database.
+        END
+    END    
 RETURN
 GO
