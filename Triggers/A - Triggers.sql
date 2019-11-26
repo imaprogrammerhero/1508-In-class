@@ -49,7 +49,11 @@ AS
     -- Body of Trigger
     IF @@ROWCOUNT > 0 -- It's a good idea to see if any rows were affected first
        AND
-       EXISTS (SELECT StudentID FROM Activity
+       EXISTS (SELECT StudentID FROM Activity 
+               -- This WHERE clause is in place because this trigger/rule might have been added AFTER 
+               -- we had place students in clubs (previous memberships over 3 are allowed)
+               -- In other words, we only want to check on the students directly affected by the INSERT/UPDATE
+               WHERE StudentID IN (SELECT StudentID FROM Inserted UNION SELECT StudentID FROM Deleted)
                GROUP BY StudentID HAVING COUNT(StudentID) > 3)
     BEGIN
         -- State why I'm going to abort the changes
@@ -116,7 +120,9 @@ FOR Insert
 AS
     -- Body of Trigger
     IF @@ROWCOUNT > 0 AND
-       EXISTS(SELECT S.StudentID FROM inserted I INNER JOIN  Student S ON I.StudentID = S.StudentID
+       EXISTS(SELECT S.StudentID 
+       FROM inserted I -- Inserted table is the same structure as the Registration table
+            INNER JOIN  Student S ON I.StudentID = S.StudentID
               WHERE S.BalanceOwing > 500)
     BEGIN
         RAISERROR('Student owes too much money - cannot register student in course', 16, 1)
@@ -129,9 +135,62 @@ SELECT * FROM Student WHERE BalanceOwing > 0
 
 -- Write a stored procedure called RegisterStudent that puts a student in a course and increases the balance owing by the cost of the course.
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'RegisterStudent')
+    DROP PROCEDURE RegisterStudent
+GO
+CREATE PROCEDURE RegisterStudent
+    -- Parameters here
+    @StudentID          int, 
+    @CourseID           char(7),
+    @Semester           char(5)
+AS
+    -- Body of procedure here
+	-- 0) Validate inputs
+    IF @StudentID IS NULL OR @CourseID IS NULL OR @Semester IS NULL
+    BEGIN
+        RAISERROR('All prameters require a value', 16, 1)
+    END
+    ELSE
+    BEGIN
+        BEGIN TRANSACTION
+        -- 1) Add the student to the course
+        INSERT INTO Registration(StudentID, CourseID, Semester)
+        VALUES (@StudentID, @CourseID, @Semester)
+        IF @@ERROR <> 0 OR @@ROWCOUNT = 0
+        BEGIN
+            RAISERROR('Unable to register student in course', 16, 1)
+            ROLLBACK TRANSACTION
+        END
+        ELSE
+        BEGIN
+            UPDATE Student
+            SET BalanceOwing = BalanceOwing + (SELECT CourseCost FROM Course WHERE CourseID = @CourseID)
+            WHERE StudentID = @StudentID
+            IF @@ERROR <> 0
+            BEGIN
+                RAISERROR ('Unable to charge student for the registration in the course', 16, 1)
+                ROLLBACK TRANSACTION
+            END
+            ELSE 
+            BEGIN
+                COMMIT TRANSACTION 
+            END
+        END
+    END
+RETURN
+GO
+
+-- Testing the trigger via the stored procedure RegisterStudent
+
+SELECT TOP (4) StudentID, BalanceOwing, CourseID FROM Student, Course -- Don't ever write a query like this unless you REALLY REALLY know what you're doing
+-- This one should succeed
+EXEC RegisterStudent 198933540, 'DMIT108', '2008J'
+-- This one should fail
+EXEC RegisterStudent 198933540, 'DMIT108', '2008J'
 
 --4. Our school DBA has suddenly disabled some Foreign Key constraints to deal with performance issues! Create a trigger on the Registration table to ensure that only valid CourseIDs, StudentIDs and StaffIDs are used for grade records. (You can use sp_help tablename to find the name of the foreign key constraints you need to disable to test your trigger.) Have the trigger raise an error for each foreign key that is not valid. If you have trouble with this question create the trigger so it just checks for a valid student ID.
 -- sp_help Registration -- then disable the foreign key constraints....
+
 ALTER TABLE Registration NOCHECK CONSTRAINT FK_GRD_CRS_CseID
 ALTER TABLE Registration NOCHECK CONSTRAINT FK_GRD_STF_StaID
 ALTER TABLE Registration NOCHECK CONSTRAINT FK_GRD_STU_StuID
@@ -156,18 +215,22 @@ AS
             ROLLBACK TRANSACTION
         END
         ELSE
-        IF UPDATE(CourseID) AND
-           NOT EXISTS (SELECT * FROM inserted I INNER JOIN Course C ON I.CourseId = C.CourseId)
         BEGIN
-            RAISERROR('That is not a valid CourseID', 16, 1)
-            ROLLBACK TRANSACTION
-        END
-        ELSE
-        IF UPDATE(StaffID) AND
-           NOT EXISTS (SELECT * FROM inserted I INNER JOIN Staff S ON I.StaffID = S.StaffID)
-        BEGIN
-            RAISERROR('That is not a valid StaffID', 16, 1)
-            ROLLBACK TRANSACTION
+            IF UPDATE(CourseID) AND
+               NOT EXISTS (SELECT * FROM inserted I INNER JOIN Course C ON I.CourseId = C.CourseId)
+            BEGIN
+                RAISERROR('That is not a valid CourseID', 16, 1)
+                ROLLBACK TRANSACTION
+            END
+            ELSE
+            BEGIN
+                IF UPDATE(StaffID) AND
+                   NOT EXISTS (SELECT * FROM inserted I INNER JOIN Staff S ON I.StaffID = S.StaffID)
+                BEGIN
+                    RAISERROR('That is not a valid StaffID', 16, 1)
+                    ROLLBACK TRANSACTION
+                END
+            END
         END
     END
 RETURN
@@ -237,6 +300,3 @@ UPDATE Student SET BalanceOwing = BalanceOwing - 100 WHERE BalanceOwing > 100
 SELECT * FROM BalanceOwingLog -- To see what's in there after a hack attempt
 UPDATE Student SET BalanceOwing = 10000 -- He's graduated, and doesn't want competition
 SELECT * FROM BalanceOwingLog -- To see what's in there after a hack attempt
-
-
-
